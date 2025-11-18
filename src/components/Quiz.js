@@ -455,8 +455,10 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
         <TimeoutScreen
           correctAnswer={lastAnswer}
           onNext={handleNextAfterTimeout}
+          lives={lives} // ←★ここを追加！
         />
       )}
+
       {isGameOver && <GameOverOverlay onBack={onBack} />}
     </div>
   );

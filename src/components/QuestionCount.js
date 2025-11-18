@@ -4,8 +4,19 @@ export default function QuestionCount({ onSelect, onBack }) {
   const counts = [7, 10, 16];
 
   return (
-    <div style={{ textAlign: "center", padding: "40px" }}>
-      <h2>出題数を選んでください</h2>
+    <div
+      style={{
+        textAlign: "center",
+        padding: "40px",
+        minHeight: "100vh",
+        backgroundImage: `url("/images/kokuban14.png")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <h2 style={{ color: "white", textShadow: "0 0 5px black" }}>
+        出題数を選んでください
+      </h2>
       {counts.map((num) => (
         <button
           key={num}
@@ -15,13 +26,20 @@ export default function QuestionCount({ onSelect, onBack }) {
             padding: "10px 20px",
             fontSize: "18px",
             borderRadius: "8px",
+            cursor: "pointer",
           }}
         >
           {num}問
         </button>
       ))}
       <div>
-        <button onClick={onBack} style={{ marginTop: "20px" }}>
+        <button
+          onClick={onBack}
+          style={{
+            marginTop: "20px",
+            cursor: "pointer",
+          }}
+        >
           ← 戻る
         </button>
       </div>

@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function TimeoutScreen({ correctAnswer, onNext }) {
+export default function TimeoutScreen({ correctAnswer, onNext, lives }) {
   return (
     <div
       style={{
@@ -27,12 +27,15 @@ export default function TimeoutScreen({ correctAnswer, onNext }) {
         <h2 style={{ marginBottom: "15px", fontSize: "1.8rem" }}>
           ⏰ タイムアップ！
         </h2>
+
         <p style={{ fontSize: "1.2rem", marginBottom: "20px" }}>
           正解は{" "}
           <span style={{ color: "#f8b400", fontWeight: "bold" }}>
             {correctAnswer}
           </span>
         </p>
+
+        {/* ★ 残機によってボタン文言を切り替え！ */}
         <button
           onClick={onNext}
           style={{
@@ -49,7 +52,7 @@ export default function TimeoutScreen({ correctAnswer, onNext }) {
           onMouseOver={(e) => (e.target.style.background = "#ffd34d")}
           onMouseOut={(e) => (e.target.style.background = "#f8b400")}
         >
-          次の問題へ →
+          {lives >= 2 ? "次の問題へ →" : "次へ進む →"}
         </button>
       </div>
     </div>

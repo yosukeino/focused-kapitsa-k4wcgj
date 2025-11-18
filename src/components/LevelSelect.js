@@ -9,8 +9,19 @@ export default function LevelSelect({ onSelect }) {
   ];
 
   return (
-    <div style={{ textAlign: "center", padding: "40px" }}>
-      <h2>難易度を選んでください</h2>
+    <div
+      style={{
+        textAlign: "center",
+        padding: "40px",
+        minHeight: "100vh",
+        backgroundImage: `url("/images/kokuban13.png")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <h2 style={{ color: "white", textShadow: "0 0 5px black" }}>
+        難易度を選んでください
+      </h2>
       {levels.map((lvl) => (
         <button
           key={lvl.id}
@@ -20,6 +31,7 @@ export default function LevelSelect({ onSelect }) {
             padding: "10px 20px",
             fontSize: "18px",
             borderRadius: "8px",
+            cursor: "pointer",
           }}
         >
           {lvl.label}
