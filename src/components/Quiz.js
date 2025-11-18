@@ -46,20 +46,20 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
   // ✅ [修正] 回答処理中の二重実行防止フラグ
   const [isChecking, setIsChecking] = useState(false);
 
-// フィードバック表示時間(ms)
-const FEEDBACK_DURATION = 1000;
+  // フィードバック表示時間(ms)
+  const FEEDBACK_DURATION = 1000;
 
-useEffect(() => {
-  if (!result && !warning) return;
+  useEffect(() => {
+    if (!result && !warning) return;
 
-  const timer = setTimeout(() => {
-    setResult("");
-    setMessageType("");
-    setWarning("");
-  }, FEEDBACK_DURATION);
+    const timer = setTimeout(() => {
+      setResult("");
+      setMessageType("");
+      setWarning("");
+    }, FEEDBACK_DURATION);
 
-  return () => clearTimeout(timer); // クリーンアップ
-}, [result, warning]);
+    return () => clearTimeout(timer); // クリーンアップ
+  }, [result, warning]);
 
   // === ステージ判定ロジック ===
   // 盤面(questionNumber, 1-based)の進捗だけでステージを判定
@@ -197,23 +197,20 @@ useEffect(() => {
       setQuestionNumber((prev) => prev + 1);
     }
   };
-
   // === 回答チェック関数 ===
   const checkAnswer = () => {
-    // ✅ [修正] 処理中なら二重実行を防ぐ
     if (!current || isChecking) return;
-
-    // ✅ [修正] 処理中フラグを立てる
     setIsChecking(true);
 
     const ans = answer.trim();
 
+    // --- ローマ字判定 ---
     if (/^[a-zA-Z]+$/.test(ans)) {
       setWarning("⚠️ ひらがなやカタカナで入力してください！");
       setResult("");
       setMessageType("warning");
       setAnswer("");
-      setIsChecking(false); // ✅ [修正] 処理完了
+      setIsChecking(false);
       return;
     }
 
@@ -248,47 +245,36 @@ useEffect(() => {
     };
 
     // --- 判定 ---
-    // 1. (E案-1) 正解
+    // 1. 正解
     if (readings.includes(ans)) {
       setResult("✅ 正解！");
       setMessageType("success");
       setTimeout(() => {
-        advanceToNextProblem(true); // 盤面を進める
-        setIsChecking(false); // ✅ [修正] 処理完了
+        advanceToNextProblem(true);
+        setIsChecking(false);
       }, 1000);
+      return;
     }
+
     // 2. おしい
-    else if (readings.some((r) => isNearMatch(ans, r))) {
+    if (readings.some((r) => isNearMatch(ans, r))) {
       setResult("🤏 おしい！あと少し！");
       setMessageType("near");
       setAnswer("");
-      setIsChecking(false); // ✅ [修正] 処理完了 (次へは進まない)
+      setIsChecking(false);
+      return;
     }
-    // 3. (E案-2) 間違い
-    else {
-      const newLives = lives - 1;
-      setLives(newLives);
-    
-      if (newLives <= 0) {
-        setResult("❌ 間違い！");
-        setMessageType("error");
-        setTimeout(() => {
-          setIsGameOver(true);
-        }, 800);
-        return;
-      }
-    
-      // 残りライフがある場合は同じ問題を続ける
-      setResult(`❌ 間違い！（残り${newLives}機）`);
-      setMessageType("error");
-    
-      // 問題は進めず、入力とメッセージをリセット
-      setTimeout(() => {
-        setAnswer("");       // 入力リセット
-        setWarning("");      // 警告リセット
-        setIsChecking(false); // 二重処理解除
-      }, 1000);
-    }    
+
+    // 3. ❌ 不正解 ←🔥 今ここを新しい仕様に差し替える！！
+    // --- ✨ 新しい不正解処理（問題を進めない・ライフを減らさない） ---
+    setResult("❌ 間違い！もう一度チャレンジ！");
+    setMessageType("error");
+
+    setTimeout(() => {
+      setAnswer("");
+      setWarning("");
+      setIsChecking(false);
+    }, 800);
   };
 
   // === 時間切れ処理 ===
