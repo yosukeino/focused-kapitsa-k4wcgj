@@ -62,24 +62,23 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
   }, [result, warning]);
 
   // === ステージ判定ロジック（問題数に応じてレベルアップ間隔を変更） ===
-const getLevelStage = (currentQuestionNum) => {
-  const currentQuestionIndex = currentQuestionNum - 1; // 0-based
+  const getLevelStage = (currentQuestionNum) => {
+    const currentQuestionIndex = currentQuestionNum - 1; // 0-based
 
-  // --- 最後の問題は BOSS ---
-  if (currentQuestionIndex === questionCount - 1) return "BOSS";
+    // --- 最後の問題は BOSS ---
+    if (currentQuestionIndex === questionCount - 1) return "BOSS";
 
-  // --- 問題数ごとにレベルアップ間隔を変更 ---
-  let interval = 2; // デフォルト 7問用
-  if (questionCount === 10) interval = 3;
-  if (questionCount === 16) interval = 5;
+    // --- 問題数ごとにレベルアップ間隔を変更 ---
+    let interval = 2; // デフォルト 7問用
+    if (questionCount === 10) interval = 3;
+    if (questionCount === 16) interval = 5;
 
-  // --- intervalごとにステージアップ ---
-  const calculatedStage = Math.floor(currentQuestionIndex / interval) + 1;
+    // --- intervalごとにステージアップ ---
+    const calculatedStage = Math.floor(currentQuestionIndex / interval) + 1;
 
-  // 最大ステージ3まで（BOSSは別処理）
-  return Math.min(3, calculatedStage);
-};
-
+    // 最大ステージ3まで（BOSSは別処理）
+    return Math.min(3, calculatedStage);
+  };
 
   // === 初期化 useEffect ===
   useEffect(() => {
@@ -441,13 +440,21 @@ const getLevelStage = (currentQuestionNum) => {
           <Timer timeLeft={timeLeft} />
           <div className="question-text">{current.kanji}</div>
           <input
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            placeholder="ひらがなで答えてね"
-            className="answer-input"
-            // ✅ [修正] 処理中は入力不可にする
-            readOnly={showTimeout || isGameOver || isChecking}
-          />
+  value={answer}
+  onChange={(e) => setAnswer(e.target.value)}
+  placeholder="ひらがなで答えてね"
+  className="answer-input"
+  // ⬇⬇⬇ ここを追加！ Enter で回答できる
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      checkAnswer();
+    }
+  }}
+  // *********************************************
+  // 下は元のコードそのままでOK
+  readOnly={showTimeout || isGameOver || isChecking}
+/>
+
           <MessageDisplay message={warning || result} type={messageType} />
           <ActionButtons
             onAnswer={checkAnswer}
