@@ -408,6 +408,7 @@ const allQuestions = [
   { level: "normal", kanji: "悲壮", reading: "ひそう" },
   { level: "normal", kanji: "潰える", reading: "ついえる" },
   { level: "normal", kanji: "勇猛果敢", reading: "ゆうもうかかん" },
+  { level: "normal", kanji: "羅針盤", reading: "らしんばん" },
 
   /*hard*/
 
@@ -622,6 +623,7 @@ const allQuestions = [
   { level: "expert", kanji: "時化", reading: "しけ" },
   { level: "expert", kanji: "忌み", reading: "いみ" },
   { level: "expert", kanji: "御御御付け", reading: "おみおつけ" },
+  { level: "expert", kanji: "初陣", reading: "ういじん" },
 ];
 
 // 他ファイルから読み込めるようにエクスポート
