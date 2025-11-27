@@ -624,6 +624,92 @@ const allQuestions = [
   { level: "expert", kanji: "忌み", reading: "いみ" },
   { level: "expert", kanji: "御御御付け", reading: "おみおつけ" },
   { level: "expert", kanji: "初陣", reading: "ういじん" },
+  { level: "expert", kanji: "吃逆", reading: "しゃっくり" },
+  { level: "expert", kanji: "境内", reading: "けいだい" },
+  { level: "expert", kanji: "齷齪", reading: "あくせく" },
+  { level: "expert", kanji: "曖昧模糊", reading: "あいまいもこ" },
+  { level: "expert", kanji: "倦怠感", reading: "けんたいかん" },
+  { level: "expert", kanji: "懊悩", reading: "おうのう" },
+  { level: "expert", kanji: "醜悪", reading: "しゅうあく" },
+  { level: "expert", kanji: "瀟洒", reading: "しょうしゃ" },
+  { level: "expert", kanji: "彷徨", reading: "ほうこう、さまよ（う）" },
+  { level: "expert", kanji: "蹉跌", reading: "さてつ" },
+  { level: "expert", kanji: "諧謔", reading: "かいぎゃく" },
+  { level: "expert", kanji: "矜恃", reading: "きょうじ" },
+  { level: "expert", kanji: "慇懃", reading: "いんぎん" },
+  { level: "expert", kanji: "耽溺", reading: "たんでき" },
+  { level: "expert", kanji: "恣意", reading: "しい" },
+  { level: "expert", kanji: "狡猾", reading: "こうかつ" },
+  { level: "expert", kanji: "佶屈", reading: "きっくつ" },
+  { level: "expert", kanji: "瑣末", reading: "さまつ" },
+  { level: "expert", kanji: "悄然", reading: "しょうぜん" },
+  { level: "expert", kanji: "慟哭", reading: "どうこく" },
+  { level: "expert", kanji: "煩瑣", reading: "はんさ" },
+  { level: "expert", kanji: "巍然", reading: "ぎぜん" },
+  { level: "expert", kanji: "杳然", reading: "ようぜん" },
+  { level: "expert", kanji: "蹶起", reading: "けっき" },
+  { level: "expert", kanji: "鷹揚", reading: "おうよう" },
+  { level: "expert", kanji: "桎梏", reading: "しっこく" },
+  { level: "expert", kanji: "膾炙", reading: "かいしゃ" },
+  { level: "expert", kanji: "驕慢", reading: "きょうまん" },
+  { level: "expert", kanji: "纂奪", reading: "さんだつ" },
+  { level: "expert", kanji: "濫觴", reading: "らんしょう" },
+  { level: "expert", kanji: "謫居", reading: "たっきょ" },
+  { level: "expert", kanji: "瘧", reading: "おこりやまい" },
+  { level: "expert", kanji: "騰蛇", reading: "とうだ" }, // 火の勢い
+  { level: "expert", kanji: "巽", reading: "そん" }, // 風水・方位
+  { level: "expert", kanji: "鬣", reading: "たてがみ" },
+  { level: "expert", kanji: "龗", reading: "りょう" }, // 水神
+  { level: "expert", kanji: "黠", reading: "かつ" }, // ずるい
+  { level: "expert", kanji: "爨", reading: "そう" }, // かまど
+  { level: "expert", kanji: "籟", reading: "らい" }, // 風の音
+  { level: "expert", kanji: "黻", reading: "ふつ" }, // 古代の服飾
+  { level: "expert", kanji: "罍", reading: "らい" }, // 酒器
+  { level: "expert", kanji: "黼", reading: "ふ" }, // 古代文様
+  { level: "expert", kanji: "躑躅", reading: "てきちょく" }, // 歩み止まる
+  { level: "expert", kanji: "饕餮", reading: "とうてつ" }, // 贅沢・食いしん坊
+  { level: "expert", kanji: "鬯", reading: "ちょう" }, // 酒
+  { level: "expert", kanji: "龜", reading: "かめ" },
+  { level: "expert", kanji: "鱗", reading: "うろこ" },
+  { level: "expert", kanji: "蠱", reading: "こ" }, // 呪い
+  { level: "expert", kanji: "讙", reading: "かん" }, // 騒ぐ
+  { level: "expert", kanji: "礪", reading: "とい" }, // 砥石
+  { level: "expert", kanji: "齟齬", reading: "そご" },
+  { level: "expert", kanji: "黷", reading: "とく" }, // 汚す
+  { level: "expert", kanji: "麝", reading: "じゃか" }, // 麝香
+  { level: "expert", kanji: "纛", reading: "とう" }, // 軍旗
+  { level: "expert", kanji: "饗", reading: "きょう" }, // もてなし
+  { level: "expert", kanji: "麾", reading: "き" }, // 旗
+  { level: "expert", kanji: "龗", reading: "りょう" },
+  { level: "expert", kanji: "黠", reading: "かつ" },
+  { level: "expert", kanji: "爨", reading: "そう" },
+  { level: "expert", kanji: "籟", reading: "らい" },
+  { level: "expert", kanji: "黻", reading: "ふつ" },
+  { level: "expert", kanji: "罍", reading: "らい" },
+  { level: "expert", kanji: "黼", reading: "ふ" },
+  { level: "expert", kanji: "躑躅", reading: "てきちょく" },
+  { level: "expert", kanji: "饕餮", reading: "とうてつ" },
+  { level: "expert", kanji: "鬯", reading: "ちょう" },
+  { level: "expert", kanji: "龜", reading: "かめ" },
+  { level: "expert", kanji: "蠱", reading: "こ" },
+  { level: "expert", kanji: "讙", reading: "かん" },
+  { level: "expert", kanji: "礪", reading: "とい" },
+  { level: "expert", kanji: "齟齬", reading: "そご" },
+  { level: "expert", kanji: "黷", reading: "とく" },
+  { level: "expert", kanji: "麝", reading: "じゃか" },
+  { level: "expert", kanji: "纛", reading: "とう" },
+  { level: "expert", kanji: "饗", reading: "きょう" },
+  { level: "expert", kanji: "麾", reading: "き" },
+  { level: "expert", kanji: "鞴", reading: "ふいご" },
+  { level: "expert", kanji: "鬮", reading: "くじ" },
+  { level: "expert", kanji: "櫛", reading: "くし" },
+  { level: "expert", kanji: "鼾", reading: "いびき" },
+  { level: "expert", kanji: "龠", reading: "やく" },
+  { level: "expert", kanji: "鼈", reading: "すっぽん" },
+  { level: "expert", kanji: "鬱", reading: "うつ" },
+  { level: "expert", kanji: "鞴", reading: "ふいご" },
+  { level: "expert", kanji: "纛", reading: "とう" },
+  { level: "expert", kanji: "螻蛄", reading: "けら" },
 ];
 
 // 他ファイルから読み込めるようにエクスポート
