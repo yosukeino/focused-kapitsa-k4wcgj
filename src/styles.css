@@ -626,3 +626,13 @@
 .startmenu-next {
   right: 10px;
 }
+
+@keyframes fadeout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

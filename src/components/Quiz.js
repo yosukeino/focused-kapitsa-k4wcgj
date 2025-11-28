@@ -10,7 +10,7 @@ import TimeoutScreen from "./TimeoutScreen";
 import QuestionCounter from "./QuestionCounter";
 import ActionButtons from "./ActionButtons";
 import MessageDisplay from "./MessageDisplay";
-import LevelIntroScreen from "./LevelIntroScreen";
+import LevelIntroOverlay from "./LevelIntroOverlay";
 import GameOverOverlay from "./GameOverOverlay";
 import allQuestions from "./questions";
 import "../styles.css";
@@ -360,18 +360,6 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
   // 2. ギブアップ確認画面
   if (showConfirm) return <ConfirmGiveUp onConfirm={confirmGiveUp} />;
 
-  // 3. ステージイントロ画面
-  if (showLevelIntro) {
-    return (
-      <LevelIntroScreen
-        stage={stage}
-        onComplete={() => {
-          setShowLevelIntro(false);
-        }}
-      />
-    );
-  }
-
   // 4. (ゲーム終了/エラー/クリア 画面)
   if (!current) {
     return (
@@ -397,6 +385,14 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
   // 5. メインのクイズ画面
   return (
     <div className="quiz-root" style={{ position: "relative" }}>
+      {/* ★ここにオーバーレイを表示させる */}
+      {showLevelIntro && (
+        <LevelIntroOverlay
+          levelText={`LEVEL ${stage} 漢検4・5級`}
+          onFinish={() => setShowLevelIntro(false)}
+        />
+      )}
+
       <DebugPanel
         questionNumber={questionNumber}
         questionCount={questionCount}
