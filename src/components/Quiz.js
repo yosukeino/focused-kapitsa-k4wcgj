@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Timer from "./Timer";
 import Lives from "./Lives";
 import Enemy from "./Enemy";
+import DebugPanel from "./DebugPanel";
 import LoadingScreen from "./LoadingScreen";
 import ConfirmGiveUp from "./ConfirmGiveUp";
 import TimeoutScreen from "./TimeoutScreen";
@@ -396,43 +397,17 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
   // 5. メインのクイズ画面
   return (
     <div className="quiz-root" style={{ position: "relative" }}>
-      {/* ===== 🔽 デバッグ表示 🔽 ===== */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          background: "rgba(0,0,0,0.7)",
-          color: "white",
-          padding: "5px",
-          fontSize: "12px",
-          zIndex: 9999,
-        }}
-      >
-        <p>
-          <strong>[デバッグ情報 (E案)]</strong>
-        </p>
-        <p>
-          questionNumber (累計正解数): <strong>{questionNumber}</strong>
-        </p>
-        <p>
-          (Index計算値): <strong>{questionNumber - 1}</strong>
-        </p>
-        <p>
-          目標正解数 (questionCount): <strong>{questionCount}</strong>
-        </p>
-        <p>
-          残り問題ストック: <strong>{questions.length}</strong>
-        </p>
-        <p>
-          処理中: <strong>{isChecking ? "true" : "false"}</strong>
-        </p>
-      </div>
-      {/* ===== 🔼 デバッグ表示ここまで 🔼 ===== */}
+      <DebugPanel
+        questionNumber={questionNumber}
+        questionCount={questionCount}
+        questionsLength={questions.length}
+        isChecking={isChecking}
+      />
 
       <div className="lives-container">
         <Lives lives={lives} />
       </div>
+
       <QuestionCounter current={questionNumber} total={questionCount} />
       <div className="quiz-mode" style={getBackgroundStyle()}>
         <div className="quiz-card">
@@ -440,20 +415,20 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
           <Timer timeLeft={timeLeft} />
           <div className="question-text">{current.kanji}</div>
           <input
-  value={answer}
-  onChange={(e) => setAnswer(e.target.value)}
-  placeholder="ひらがなで答えてね"
-  className="answer-input"
-  // ⬇⬇⬇ ここを追加！ Enter で回答できる
-  onKeyDown={(e) => {
-    if (e.key === "Enter") {
-      checkAnswer();
-    }
-  }}
-  // *********************************************
-  // 下は元のコードそのままでOK
-  readOnly={showTimeout || isGameOver || isChecking}
-/>
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            placeholder="ひらがなで答えてね"
+            className="answer-input"
+            // ⬇⬇⬇ ここを追加！ Enter で回答できる
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                checkAnswer();
+              }
+            }}
+            // *********************************************
+            // 下は元のコードそのままでOK
+            readOnly={showTimeout || isGameOver || isChecking}
+          />
 
           <MessageDisplay message={warning || result} type={messageType} />
           <ActionButtons
