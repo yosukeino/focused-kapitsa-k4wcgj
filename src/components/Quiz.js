@@ -12,6 +12,7 @@ import ActionButtons from "./ActionButtons";
 import MessageDisplay from "./MessageDisplay";
 import LevelIntroOverlay from "./LevelIntroOverlay";
 import GameOverOverlay from "./GameOverOverlay";
+import GameClearOverlay from "./GameClearOverlay";
 import allQuestions from "./questions";
 import "../styles.css";
 
@@ -46,6 +47,7 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
   const [isGameOver, setIsGameOver] = useState(false); // ゲームオーバー画面
   // ✅ [修正] 回答処理中の二重実行防止フラグ
   const [isChecking, setIsChecking] = useState(false);
+  const [showGameClear, setShowGameClear] = useState(false);
 
   // フィードバック表示時間(ms)
   const FEEDBACK_DURATION = 1000;
@@ -122,13 +124,11 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
 
     const newStage = getLevelStage(questionNumber);
 
-    // ★ stage 変更と showLevelIntro を一緒に更新する
     if (newStage !== stage) {
-      setShowLevelIntro(false); // いったん確実に閉じる
-      setTimeout(() => {
-        setStage(newStage);
-        setShowLevelIntro(true); // 次のフレームで確実に開く
-      }, 0);
+      setStage(newStage);
+
+      setShowLevelIntro(false);
+      requestAnimationFrame(() => setShowLevelIntro(true));
     }
   }, [questionNumber, current, isGameOver]);
 
@@ -184,9 +184,12 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
   const advanceToNextProblem = (isCorrect = false) => {
     // 1. (Win Condition) [正解時のみ] これが最後の正解だったか
     if (isCorrect && questionNumber === questionCount) {
-      setResult("🎉 全問終了！お疲れさまでした 🎉");
-      setMessageType("info");
-      setCurrent(null);
+      // ★ GAME CLEAR 発動
+      setShowGameClear(true);
+
+      // current を null にすると通常の終了画面になるので消す
+      // setCurrent(null); ←これは削除
+
       return;
     }
 
@@ -452,6 +455,8 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
       )}
 
       {isGameOver && <GameOverOverlay onBack={onBack} />}
+
+      {showGameClear && <GameClearOverlay onBack={onBack} />}
     </div>
   );
 }
