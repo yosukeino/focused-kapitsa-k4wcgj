@@ -12,7 +12,7 @@ import ActionButtons from "./ActionButtons";
 import MessageDisplay from "./MessageDisplay";
 import LevelIntroOverlay from "./LevelIntroOverlay";
 import GameOverOverlay from "./GameOverOverlay";
-import GameClearOverlay from "./GameClearOverlay";
+import GameClearScreen from "./GameClearScreen";
 import allQuestions from "./questions";
 import "../styles.css";
 
@@ -367,6 +367,10 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
 
   // 2. ギブアップ確認画面
   if (showConfirm) return <ConfirmGiveUp onConfirm={confirmGiveUp} />;
+  // 3. ゲームクリア画面（★追加★）
+  if (showGameClear) {
+    return <GameClearScreen onBack={onBack} />;
+  }
 
   // 4. (ゲーム終了/エラー/クリア 画面)
   if (!current) {
@@ -455,8 +459,6 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
       )}
 
       {isGameOver && <GameOverOverlay onBack={onBack} />}
-
-      {showGameClear && <GameClearOverlay onBack={onBack} />}
     </div>
   );
 }
