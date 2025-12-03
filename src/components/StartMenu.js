@@ -10,9 +10,9 @@ export default function StartMenu({ onSelect }) {
       { img: "/images/遊び方説明.png", target: null },
     ],
     [
-      { img: "/images/詳細設定黒板.jpg", target: null },
-      { img: "/images/音量調整（3）.jpg", target: null },
-      { img: "/images/エクストラ.jpg", target: null },
+      { img: "/images/ジュークボックス.png", target: null },
+      { img: "/images/音量調整.png", target: null },
+      { img: "/images/クレジット・規定.png", target: null },
     ],
     [
       { img: "/images/ラッシュ.png", target: null },

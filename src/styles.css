@@ -650,7 +650,7 @@
   font-family: "Zen Kurenaido", sans-serif;
 
   /* --- 追加：チョーク書き込みアニメーション --- */
-  animation: chalk-write 3.5s ease-out forwards;
+  animation: chalk-write 2.5s ease-out forwards;
   white-space: nowrap;
   overflow: hidden;
 }

@@ -435,7 +435,7 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
             }}
             // *********************************************
             // 下は元のコードそのままでOK
-            readOnly={showTimeout || isGameOver || isChecking}
+            readOnly={showTimeout || isGameOver || isChecking || showLevelIntro}
           />
 
           <MessageDisplay message={warning || result} type={messageType} />
@@ -444,7 +444,7 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
             onSwap={skipQuestion}
             onGiveUp={handleGiveUp}
             // ✅ [修正] 処理中はボタンも無効化
-            disabled={skipUsed || isChecking}
+            disabled={skipUsed || isChecking || showLevelIntro}
           />
         </div>
       </div>
