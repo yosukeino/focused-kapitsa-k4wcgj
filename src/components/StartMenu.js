@@ -5,19 +5,19 @@ import "../styles.css";
 export default function StartMenu({ onSelect }) {
   const slidesData = [
     [
+      { img: "/images/エクストラ.png", target: null },
       { img: "/images/メイン.png", target: "level" },
-      { img: "/images/ラッシュ.png", target: null },
       { img: "/images/遊び方説明.png", target: null },
     ],
     [
       { img: "/images/詳細設定黒板.jpg", target: null },
       { img: "/images/音量調整（3）.jpg", target: null },
-      { img: "/images/エクストラ黒板.jpg", target: null },
+      { img: "/images/エクストラ.jpg", target: null },
     ],
     [
       { img: "/images/ラッシュ.png", target: null },
       { img: "/images/メイン.png", target: "level" },
-      { img: "/images/ラッシュ.png", target: null },
+      { img: "/images/遊び方説明.png", target: null },
     ],
   ];
 
@@ -39,6 +39,9 @@ export default function StartMenu({ onSelect }) {
         className="startmenu-background"
         alt="黒板"
       />
+
+      {/* 追加：タイトル */}
+      <div className="startmenu-title">遊びたいモードを選んでください</div>
 
       {/* スライド */}
       <div className="startmenu-slides">
