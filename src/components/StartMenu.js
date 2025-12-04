@@ -52,15 +52,13 @@ export default function StartMenu({ onSelect }) {
           >
             <div className="startmenu-menu-items">
               {slide.map((item, j) => (
-                <img
+                <div
                   key={j}
-                  src={item.img}
-                  alt={`menu-${j}`}
-                  onClick={() => {
-                    if (item.target) onSelect(item.target);
-                  }}
-                  style={{ cursor: item.target ? "pointer" : "default" }}
-                />
+                  className="startmenu-item-box"
+                  onClick={() => item.target && onSelect(item.target)}
+                >
+                  <img src={item.img} alt={`menu-${j}`} />
+                </div>
               ))}
             </div>
           </div>

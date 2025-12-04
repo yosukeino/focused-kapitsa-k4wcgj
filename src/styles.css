@@ -533,9 +533,9 @@
   text-shadow: 2px 2px 5px black;
   cursor: pointer;
 }
-/* ==============================
-   🖤 StartMenu 専用スライダー
-============================== */
+/* ---------- StartMenu 修正セクション（これを styles.css に上書き） ---------- */
+
+/* スライダーの基礎 */
 .startmenu-slider {
   position: relative;
   width: 100%;
@@ -545,6 +545,7 @@
   overflow: hidden;
 }
 
+/* 黒板背景（下）*/
 .startmenu-background {
   position: absolute;
   top: 0;
@@ -555,15 +556,18 @@
   z-index: 1;
 }
 
+/* スライド（画像群）は黒板より上、タイトルより下にしたい */
 .startmenu-slides {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 2;
+  z-index: 3;
+  pointer-events: none; /* ← これを追加！！ */
 }
 
+/* slide の見え方 */
 .startmenu-slide {
   opacity: 0;
   transform: translateY(20px);
@@ -581,6 +585,7 @@
   transform: translateY(0);
 }
 
+/* メニュー画像群はタイトルより前面（z-index を調整） */
 .startmenu-menu-items {
   position: absolute;
   bottom: 120px;
@@ -588,16 +593,20 @@
   display: flex;
   justify-content: center;
   gap: 25px;
-  z-index: 3;
+  z-index: 4; /* 画像がタイトルと重なっても hover を受けるようにする */
+  pointer-events: auto; /* 念のため */
 }
 
+/* 画像ボタン */
 .startmenu-menu-items img {
   width: 300px;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: transform 0.25s ease, filter 0.25s ease, opacity 0.25s ease;
   opacity: 0.85;
+  pointer-events: auto; /* 重要：画像がホバーを受け取れるようにする */
 }
 
+/* hover 効果（全スライド共通） */
 .startmenu-menu-items img:hover {
   transform: scale(1.12) translateY(-8px);
   filter: brightness(1.15);
@@ -616,26 +625,17 @@
   color: white;
   border: none;
   cursor: pointer;
-  z-index: 5;
+  z-index: 6;
 }
 
 .startmenu-prev {
   left: 10px;
 }
-
 .startmenu-next {
   right: 10px;
 }
 
-@keyframes fadeout {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
+/* タイトル（黒板上） — pointer-events:none にしてクリック/hoverを貫通 */
 .startmenu-title {
   position: absolute;
   top: 12%;
@@ -646,16 +646,14 @@
   color: #fff;
   text-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
   z-index: 5;
-  pointer-events: none;
+  pointer-events: none; /* ← 必ず必要 */
   font-family: "Zen Kurenaido", sans-serif;
-
-  /* --- 追加：チョーク書き込みアニメーション --- */
   animation: chalk-write 2.5s ease-out forwards;
   white-space: nowrap;
   overflow: hidden;
 }
 
-/* チョークで書くようなアニメーション */
+/* チョーク書きアニメーション */
 @keyframes chalk-write {
   0% {
     clip-path: inset(0 100% 0 0);
@@ -669,3 +667,20 @@
     opacity: 1;
   }
 }
+
+.startmenu-item-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  transition: transform 0.2s, filter 0.2s;
+  cursor: pointer;
+}
+
+/* hover 中のエフェクト（画像＋余白まとめて） */
+.startmenu-item-box:hover {
+  transform: scale(1.07);
+  filter: brightness(1.15);
+}
+
+/* ---------- End 修正セクション ---------- */
