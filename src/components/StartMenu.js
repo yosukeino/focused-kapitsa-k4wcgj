@@ -7,7 +7,7 @@ export default function StartMenu({ onSelect }) {
     [
       { img: "/images/エクストラ.png", target: null },
       { img: "/images/メイン.png", target: "level" },
-      { img: "/images/遊び方説明.png", target: null },
+      { img: "/images/遊び方説明.png", target: "howto" },
     ],
     [
       { img: "/images/ジュークボックス.png", target: null },

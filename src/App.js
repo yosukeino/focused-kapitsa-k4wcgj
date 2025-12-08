@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import TopSlide from "./components/TopSlide";
 import StartMenu from "./components/StartMenu";
+import HowToPlay from "./components/HowToPlay";
 import LevelSelect from "./components/LevelSelect";
 import QuestionCount from "./components/QuestionCount";
 import TimeSelect from "./components/TimeSelect";
@@ -17,21 +18,20 @@ export default function App() {
   return (
     <div className="App">
       {/* トップページ */}
-      {page === "top" && (
-        <TopSlide
-          onStart={() => setPage("startMenu")}
-        />
-      )}
+      {page === "top" && <TopSlide onStart={() => setPage("startMenu")} />}
 
       {/* StartMenu */}
       {page === "startMenu" && (
         <StartMenu
           onSelect={(target) => {
             if (target === "level") setPage("level");
+            if (target === "howto") setPage("howto"); // ← ★追加
           }}
           onBack={() => setPage("top")}
         />
       )}
+
+      {page === "howto" && <HowToPlay onBack={() => setPage("startMenu")} />}
 
       {/* レベル選択画面 */}
       {page === "level" && (

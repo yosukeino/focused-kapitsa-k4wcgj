@@ -684,3 +684,179 @@
 }
 
 /* ---------- End 修正セクション ---------- */
+
+/* --- HowToPlay デザイン --- */
+
+/* --- HowToPlay デザイン --- */
+
+.howto-root {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+.howto-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto; /* ★ StartMenu と同じ挙動にする */
+  z-index: 1;
+}
+
+.howto-content {
+  position: absolute;
+  top: 5%;
+  left: 6%;
+  width: 70%;
+  color: white;
+  z-index: 2;
+  font-family: "Zen Maru Gothic", sans-serif;
+
+  text-align: left; /* ★ 全体の文章を左揃え */
+}
+
+/* --- 見出し（タイトルと大見出し） --- */
+.howto-title,
+.howto-heading {
+  color: #ffeb3b; /* ★ 黄色に変更 */
+}
+
+/* タイトル */
+.howto-title {
+  font-size: 38px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #ffeb3b;
+  text-align: center; /* ★ h1だけ中央揃えに */
+}
+
+/* 中見出し */
+.howto-heading {
+  font-size: 26px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+/* 説明文章 */
+.howto-text {
+  font-size: 20px;
+  margin-left: 10px;
+  margin-bottom: 20px;
+  text-align: left; /* ★ 左揃え */
+}
+
+/* 箇条書き */
+.howto-list {
+  font-size: 20px;
+  margin-left: 20px;
+  padding-left: 0;
+  list-style-position: inside;
+  line-height: 1.8em;
+  text-align: left; /* ★ 左揃え */
+}
+
+/* ボタン */
+.howto-start-btn {
+  position: absolute;
+  bottom: 8%;
+  left: 8%;
+  background: #ffcc66;
+  padding: 14px 30px;
+  border-radius: 12px;
+  border: 3px solid #d6a84f;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.howto-content,
+.howto-title,
+.howto-heading,
+.howto-text,
+.howto-list {
+  font-family: "Yusei Magic", sans-serif !important; /* ★ 日本語対応のチョーク風フォント */
+}
+
+/* 左下：Start Menu に戻る */
+.howto-start-btn {
+  position: absolute;
+  bottom: 5%;
+  left: 5%;
+  background: #ffcc66;
+  padding: 12px 26px;
+  border-radius: 12px;
+  border: 3px solid #d6a84f;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 3;
+}
+
+/* 右下：説明切り替えボタン */
+.howto-switch-btn {
+  position: absolute;
+  bottom: 5%;
+  right: 5%;
+  background: #66ccff;
+  padding: 12px 26px;
+  border-radius: 12px;
+  border: 3px solid #3ba4d4;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 3;
+}
+
+/* --- 書き込むアニメーション --- */
+@keyframes chalkWrite {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+/* すべてのテキストに適用 */
+.howto-content * {
+  animation: chalkWrite 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+/* 順番に書かれるようディレイを設定 */
+.howto-title {
+  animation-delay: 0.1s;
+}
+
+.howto-heading:nth-of-type(1) {
+  animation-delay: 0.3s;
+}
+
+.howto-text {
+  animation-delay: 0.5s;
+}
+
+.howto-heading:nth-of-type(2) {
+  animation-delay: 0.7s;
+}
+
+.howto-list li:nth-child(1) {
+  animation-delay: 0.9s;
+}
+.howto-list li:nth-child(2) {
+  animation-delay: 1.1s;
+}
+.howto-list li:nth-child(3) {
+  animation-delay: 1.3s;
+}
+.howto-list li:nth-child(4) {
+  animation-delay: 1.5s;
+}
+.howto-list li:nth-child(5) {
+  animation-delay: 1.7s;
+}
+.howto-list li:nth-child(6) {
+  animation-delay: 1.9s;
+}
