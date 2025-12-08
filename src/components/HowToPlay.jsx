@@ -59,6 +59,11 @@ export default function HowToPlay({ onBack }) {
 
         {/* -------------------- ボタン群 -------------------- */}
 
+        {/* 戻るボタン */}
+        <button className="howto-start-btn" onClick={onBack}>
+          ← Start Menu に戻る
+        </button>
+
         {/* メイン ←→ エクストラ切り替えボタン */}
         <button
           className="howto-switch-btn"
@@ -67,11 +72,6 @@ export default function HowToPlay({ onBack }) {
           {mode === "main"
             ? "エクストラステージの説明へ →"
             : "メインモードの説明に戻る →"}
-        </button>
-
-        {/* 戻るボタン */}
-        <button className="howto-start-btn" onClick={onBack}>
-          ← Start Menu に戻る
         </button>
       </div>
     </div>

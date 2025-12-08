@@ -758,32 +758,42 @@
    ボタン
 ================================ */
 
-/* 左下：メニューに戻る */
+/* ボタンを横に並べて中央に配置 */
+.howto-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 30px; /* ボタン間のスペース */
+  margin-top: 40px;
+  margin-bottom: 60px;
+  z-index: 5;
+}
+
+/* 左：Start Menu */
 .howto-start-btn {
-  position: absolute;
-  bottom: 5%;
-  left: 5%;
   background: #ffcc66;
-  padding: 12px 26px;
+  padding: 14px 28px;
   border-radius: 12px;
   border: 3px solid #d6a84f;
   font-size: 20px;
   cursor: pointer;
-  z-index: 3;
 }
 
-/* 右下：エクストラ説明切り替え */
+/* 右：説明切り替え */
 .howto-switch-btn {
-  position: absolute;
-  bottom: 5%;
-  right: 5%;
   background: #66ccff;
-  padding: 12px 26px;
+  padding: 14px 28px;
   border-radius: 12px;
   border: 3px solid #3ba4d4;
   font-size: 20px;
   cursor: pointer;
-  z-index: 3;
+}
+
+/* ホバー効果（任意でオシャレ） */
+.howto-start-btn:hover,
+.howto-switch-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-3px);
+  transition: 0.2s;
 }
 
 /* ===============================
