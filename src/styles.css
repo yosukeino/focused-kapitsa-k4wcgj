@@ -685,65 +685,64 @@
 
 /* ---------- End 修正セクション ---------- */
 
-/* --- HowToPlay デザイン --- */
-
-/* --- HowToPlay デザイン --- */
-
+/* ===============================
+   HowToPlay 背景とレイアウト
+================================ */
 .howto-root {
   position: relative;
   width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh; /* ★ 重要：画面より大きくなったら高さが伸びる */
+  overflow-x: hidden;
+  overflow-y: auto; /* ★ スクロール可能へ */
 }
+
+/* 黒板背景を StartMenu と同じ見た目にする */
 .howto-bg {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: auto; /* ★ StartMenu と同じ挙動にする */
+  height: auto;
   z-index: 1;
+  min-height: 100vh; /* ★ 背景が消えないよう最低高さを保証 */
 }
 
+/* ===============================
+   メインコンテンツ
+================================ */
 .howto-content {
-  position: absolute;
-  top: 5%;
-  left: 6%;
+  position: relative;
+  margin-top: 8%;
+  margin-left: 6%;
   width: 70%;
   color: white;
   z-index: 2;
-  font-family: "Zen Maru Gothic", sans-serif;
-
-  text-align: left; /* ★ 全体の文章を左揃え */
+  font-family: "Yusei Magic", sans-serif;
+  text-align: left;
 }
 
-/* --- 見出し（タイトルと大見出し） --- */
-.howto-title,
-.howto-heading {
-  color: #ffeb3b; /* ★ 黄色に変更 */
-}
-
-/* タイトル */
+/* タイトル（中央揃え） */
 .howto-title {
   font-size: 38px;
   font-weight: bold;
   margin-bottom: 30px;
   color: #ffeb3b;
-  text-align: center; /* ★ h1だけ中央揃えに */
+  text-align: center;
 }
 
-/* 中見出し */
+/* 見出し */
 .howto-heading {
   font-size: 26px;
+  color: #ffeb3b;
   margin-top: 20px;
   margin-bottom: 10px;
 }
 
-/* 説明文章 */
+/* 説明文 */
 .howto-text {
   font-size: 20px;
   margin-left: 10px;
   margin-bottom: 20px;
-  text-align: left; /* ★ 左揃え */
 }
 
 /* 箇条書き */
@@ -753,31 +752,13 @@
   padding-left: 0;
   list-style-position: inside;
   line-height: 1.8em;
-  text-align: left; /* ★ 左揃え */
 }
 
-/* ボタン */
-.howto-start-btn {
-  position: absolute;
-  bottom: 8%;
-  left: 8%;
-  background: #ffcc66;
-  padding: 14px 30px;
-  border-radius: 12px;
-  border: 3px solid #d6a84f;
-  font-size: 22px;
-  cursor: pointer;
-}
+/* ===============================
+   ボタン
+================================ */
 
-.howto-content,
-.howto-title,
-.howto-heading,
-.howto-text,
-.howto-list {
-  font-family: "Yusei Magic", sans-serif !important; /* ★ 日本語対応のチョーク風フォント */
-}
-
-/* 左下：Start Menu に戻る */
+/* 左下：メニューに戻る */
 .howto-start-btn {
   position: absolute;
   bottom: 5%;
@@ -791,7 +772,7 @@
   z-index: 3;
 }
 
-/* 右下：説明切り替えボタン */
+/* 右下：エクストラ説明切り替え */
 .howto-switch-btn {
   position: absolute;
   bottom: 5%;
@@ -805,7 +786,9 @@
   z-index: 3;
 }
 
-/* --- 書き込むアニメーション --- */
+/* ===============================
+   書き込みアニメーション（チョーク風）
+================================ */
 @keyframes chalkWrite {
   from {
     opacity: 0;
@@ -819,25 +802,21 @@
   }
 }
 
-/* すべてのテキストに適用 */
 .howto-content * {
   animation: chalkWrite 0.8s ease-out forwards;
   opacity: 0;
 }
 
-/* 順番に書かれるようディレイを設定 */
+/* 時間差アニメーション */
 .howto-title {
   animation-delay: 0.1s;
 }
-
 .howto-heading:nth-of-type(1) {
   animation-delay: 0.3s;
 }
-
 .howto-text {
   animation-delay: 0.5s;
 }
-
 .howto-heading:nth-of-type(2) {
   animation-delay: 0.7s;
 }
