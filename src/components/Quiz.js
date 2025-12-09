@@ -66,6 +66,13 @@ export default function Quiz({ level, questionCount, timeLimit, bgm, onBack }) {
   normalBGM.loop = true;
   bossBGM.loop = true;
 
+  // ★ BGM 音量反映（App.js から受け取った値）
+  useEffect(() => {
+    normalBGM.volume = bgmVolume;
+    bossBGM.volume = bgmVolume;
+    if (clearBGM) clearBGM.volume = bgmVolume; // GAME CLEAR BGM がある場合
+  }, [bgmVolume]);
+
   // 🎵 GAME CLEAR 用 BGM
   const clearBGMRef = React.useRef(new Audio("/bgm-clear.mp3"));
   const clearBGM = clearBGMRef.current;
