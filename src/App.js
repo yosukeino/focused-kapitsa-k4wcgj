@@ -42,8 +42,8 @@ export default function App() {
         <BgmSelect
           currentBgm={bgm}
           onSave={(newBgm) => {
-            setBgm(newBgm); // ★保存
-            setPage("startMenu");
+            setBgm(newBgm);
+            // ★ ページ遷移は削除！
           }}
           onBack={() => setPage("startMenu")}
         />

@@ -10,7 +10,18 @@ export default function BgmSelect({ currentBgm, onSave, onBack }) {
   ];
 
   const [selectedBgm, setSelectedBgm] = useState(currentBgm);
+  const [showOverlay, setShowOverlay] = useState(false); // ←★追加
   const audioRef = useRef(null);
+
+  // BgmSelect が閉じる時に確実に停止
+  React.useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   // 試し聴き
   const playPreview = (file) => {
@@ -22,12 +33,25 @@ export default function BgmSelect({ currentBgm, onSave, onBack }) {
     audioRef.current.play();
   };
 
-  // 停止
   const stopPreview = () => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
     }
+  };
+
+  // ★ 保存処理（オーバーレイ表示 → 自動解除 → onSave）
+  const handleSave = () => {
+    stopPreview();
+
+    setShowOverlay(true);
+
+    // 保存だけ行う（ページ遷移しない）
+    onSave(selectedBgm);
+
+    setTimeout(() => {
+      setShowOverlay(false);
+    }, 1800);
   };
 
   return (
@@ -40,6 +64,7 @@ export default function BgmSelect({ currentBgm, onSave, onBack }) {
         backgroundPosition: "center",
         padding: "40px",
         color: "white",
+        position: "relative",
       }}
     >
       <h1 style={{ textAlign: "center", marginBottom: "30px" }}>
@@ -110,7 +135,7 @@ export default function BgmSelect({ currentBgm, onSave, onBack }) {
         ))}
       </div>
 
-      {/* ボタンエリア */}
+      {/* ボタン */}
       <div
         style={{
           marginTop: "40px",
@@ -128,10 +153,7 @@ export default function BgmSelect({ currentBgm, onSave, onBack }) {
             border: "3px solid #3ba4d4",
             cursor: "pointer",
           }}
-          onClick={() => {
-            stopPreview();
-            onSave(selectedBgm);
-          }}
+          onClick={handleSave} // ★変更
         >
           ✔ 保存する
         </button>
@@ -153,6 +175,41 @@ export default function BgmSelect({ currentBgm, onSave, onBack }) {
           ← 戻る
         </button>
       </div>
+
+      {/* ★★★ 保存オーバーレイ ★★★ */}
+      {showOverlay && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.6)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "32px",
+            color: "white",
+            animation: "fadeOut 1.8s forwards",
+          }}
+        >
+          🎧 BGM「
+          {bgmList.find((b) => b.id === selectedBgm)?.label.replace("♪ ", "")}
+          」を設定しました！
+        </div>
+      )}
+
+      {/* CSSアニメーション */}
+      <style>
+        {`
+        @keyframes fadeOut {
+          0% { opacity: 1; }
+          80% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+      `}
+      </style>
     </div>
   );
 }
