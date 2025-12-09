@@ -7,17 +7,20 @@ import QuestionCount from "./components/QuestionCount";
 import TimeSelect from "./components/TimeSelect";
 import WaitScreen from "./components/WaitScreen";
 import Quiz from "./components/Quiz";
+import BgmSelect from "./components/BgmSelect"; // ← ★追加
 import "./styles.css";
 
 export default function App() {
-  const [page, setPage] = useState("top"); // 最初のページ
+  const [page, setPage] = useState("top");
   const [level, setLevel] = useState(null);
   const [questionCount, setQuestionCount] = useState(0);
   const [timeLimit, setTimeLimit] = useState(30);
 
+  // 🎵 ★ 現在選択されている BGM 名（通常ステージ用）
+  const [bgm, setBgm] = useState("normal1");
+
   return (
     <div className="App">
-      {/* トップページ */}
       {page === "top" && <TopSlide onStart={() => setPage("startMenu")} />}
 
       {/* StartMenu */}
@@ -25,15 +28,28 @@ export default function App() {
         <StartMenu
           onSelect={(target) => {
             if (target === "level") setPage("level");
-            if (target === "howto") setPage("howto"); // ← ★追加
+            if (target === "howto") setPage("howto");
+            if (target === "bgm") setPage("bgm"); // ← ★ジュークボックス
           }}
-          onBack={() => setPage("top")}
         />
       )}
 
+      {/* 遊び方 */}
       {page === "howto" && <HowToPlay onBack={() => setPage("startMenu")} />}
 
-      {/* レベル選択画面 */}
+      {/* BGM設定ページ */}
+      {page === "bgm" && (
+        <BgmSelect
+          currentBgm={bgm}
+          onSave={(newBgm) => {
+            setBgm(newBgm); // ★保存
+            setPage("startMenu");
+          }}
+          onBack={() => setPage("startMenu")}
+        />
+      )}
+
+      {/* レベル選択 */}
       {page === "level" && (
         <LevelSelect
           onSelect={(lvl) => {
@@ -44,7 +60,7 @@ export default function App() {
         />
       )}
 
-      {/* 問題数選択 */}
+      {/* 問題数 */}
       {page === "count" && (
         <QuestionCount
           onSelect={(count) => {
@@ -55,7 +71,7 @@ export default function App() {
         />
       )}
 
-      {/* 制限時間選択 */}
+      {/* 制限時間 */}
       {page === "time" && (
         <TimeSelect
           onSelect={(time) => {
@@ -66,7 +82,7 @@ export default function App() {
         />
       )}
 
-      {/* 開始前待機画面 */}
+      {/* 開始前 */}
       {page === "wait" && (
         <WaitScreen
           level={level}
@@ -77,12 +93,13 @@ export default function App() {
         />
       )}
 
-      {/* クイズ画面 */}
+      {/* クイズ */}
       {page === "quiz" && (
         <Quiz
           level={level}
           questionCount={questionCount}
           timeLimit={timeLimit}
+          bgm={bgm} // ★選択されたBGMを渡す
           onBack={() => setPage("level")}
         />
       )}

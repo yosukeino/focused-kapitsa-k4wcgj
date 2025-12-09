@@ -26,7 +26,7 @@ function shuffle(arr) {
   return a;
 }
 
-export default function Quiz({ level, questionCount, timeLimit, onBack }) {
+export default function Quiz({ level, questionCount, timeLimit, bgm, onBack }) {
   // === State ===
   const [questions, setQuestions] = useState([]); // 残りの問題の配列
   const [current, setCurrent] = useState(null); // 現在の問題オブジェクト
@@ -52,15 +52,24 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
   // フィードバック表示時間(ms)
   const FEEDBACK_DURATION = 1000;
 
-  // 🎵 BGM 音源（useRef にすることで毎レンダーで再生成しない）
-  const normalBGMRef = React.useRef(new Audio("/bgmstand.mp3"));
-  const bossBGMRef = React.useRef(new Audio("/bgmboss.mp3"));
+  // 🎵 BGM 音源（選択されたBGMをロード）
+  const normalBGMRef = React.useRef(
+    new Audio(
+      `/bgm-normal-${bgm === "normal1" ? 1 : bgm === "normal2" ? 2 : 3}.mp3`
+    )
+  );
+  const bossBGMRef = React.useRef(new Audio("/bgm-boss.mp3"));
 
   const normalBGM = normalBGMRef.current;
   const bossBGM = bossBGMRef.current;
 
   normalBGM.loop = true;
   bossBGM.loop = true;
+
+  // 🎵 GAME CLEAR 用 BGM
+  const clearBGMRef = React.useRef(new Audio("/bgm-clear.mp3"));
+  const clearBGM = clearBGMRef.current;
+  clearBGM.loop = false; // ループさせたいなら true
 
   useEffect(() => {
     if (!result && !warning) return;
@@ -167,6 +176,28 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
       bossBGM.pause();
     };
   }, [stage, current, isGameOver, showGameClear]);
+
+  // 🎵 ゲーム終了時（クリア or ゲームオーバー）にBGMを処理
+  useEffect(() => {
+    if (showGameClear) {
+      normalBGM.pause();
+      bossBGM.pause();
+      normalBGM.currentTime = 0;
+      bossBGM.currentTime = 0;
+
+      clearBGM.currentTime = 0;
+      clearBGM.play();
+    }
+
+    if (isGameOver) {
+      normalBGM.pause();
+      bossBGM.pause();
+      normalBGM.currentTime = 0;
+      bossBGM.currentTime = 0;
+      clearBGM.pause();
+      clearBGM.currentTime = 0;
+    }
+  }, [isGameOver, showGameClear]);
 
   // === 背景スタイル ===
   const getBackgroundStyle = () => {
