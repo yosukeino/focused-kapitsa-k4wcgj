@@ -24,7 +24,7 @@ export default function VolumeSetting({ bgmVolume, seVolume, onSave, onBack }) {
       style={{
         width: "100vw",
         minHeight: "100vh",
-        backgroundImage: `url("/images/kokuban21.png")`,
+        backgroundImage: `url("/images/kokuban412.png")`,
         backgroundSize: "cover",
         padding: "40px",
         color: "white",

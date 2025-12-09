@@ -7,7 +7,7 @@ export default function HowToPlay({ onBack }) {
 
   return (
     <div className="howto-root">
-      <img src="/images/kokuban21.png" className="howto-bg" alt="黒板" />
+      <img src="/images/kokuban223.png" className="howto-bg" alt="黒板" />
 
       <div className="howto-content">
         {/* -------------------- タイトル -------------------- */}

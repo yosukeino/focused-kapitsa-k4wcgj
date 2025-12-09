@@ -59,7 +59,7 @@ export default function BgmSelect({ currentBgm, onSave, onBack }) {
       style={{
         width: "100vw",
         minHeight: "100vh",
-        backgroundImage: `url("/images/kokuban21.png")`,
+        backgroundImage: `url("/images/kokuban330.png")`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         padding: "40px",
