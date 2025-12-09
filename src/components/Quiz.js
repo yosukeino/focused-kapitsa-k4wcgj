@@ -52,6 +52,16 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
   // フィードバック表示時間(ms)
   const FEEDBACK_DURATION = 1000;
 
+  // 🎵 BGM 音源（useRef にすることで毎レンダーで再生成しない）
+  const normalBGMRef = React.useRef(new Audio("/bgmstand.mp3"));
+  const bossBGMRef = React.useRef(new Audio("/bgmboss.mp3"));
+
+  const normalBGM = normalBGMRef.current;
+  const bossBGM = bossBGMRef.current;
+
+  normalBGM.loop = true;
+  bossBGM.loop = true;
+
   useEffect(() => {
     if (!result && !warning) return;
 
@@ -116,6 +126,8 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
     setShowLevelIntro(true); // イントロ画面を表示
     setTimeLeft(timeLimit); // タイマーをセット
     setIsChecking(false); // ✅ 処理中フラグをリセット
+    normalBGM.currentTime = 0;
+    normalBGM.play(); // ←★ここを追加！
   }, [level, questionCount, timeLimit]);
 
   // === ステージ変更時のイントロ表示（競合防止版） ===
@@ -131,6 +143,30 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
       requestAnimationFrame(() => setShowLevelIntro(true));
     }
   }, [questionNumber, current, isGameOver]);
+
+  // 🎵 BGM 切り替え処理
+  useEffect(() => {
+    if (!current || isGameOver || showGameClear) return;
+
+    // BOSS のときだけボスBGM
+    if (stage === "BOSS") {
+      normalBGM.pause();
+      normalBGM.currentTime = 0;
+
+      bossBGM.play();
+    } else {
+      bossBGM.pause();
+      bossBGM.currentTime = 0;
+
+      normalBGM.play();
+    }
+
+    return () => {
+      // クイズ終了時に両方止める
+      normalBGM.pause();
+      bossBGM.pause();
+    };
+  }, [stage, current, isGameOver, showGameClear]);
 
   // === 背景スタイル ===
   const getBackgroundStyle = () => {
@@ -359,6 +395,16 @@ export default function Quiz({ level, questionCount, timeLimit, onBack }) {
       setShowConfirm(false);
     }
   };
+
+  // 🎵 ゲーム終了時（クリア or ゲームオーバー）にBGMを停止
+  useEffect(() => {
+    if (isGameOver || showGameClear) {
+      normalBGM.pause();
+      bossBGM.pause();
+      normalBGM.currentTime = 0;
+      bossBGM.currentTime = 0;
+    }
+  }, [isGameOver, showGameClear]);
 
   // === レンダリング ===
 
