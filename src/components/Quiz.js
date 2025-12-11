@@ -26,7 +26,14 @@ function shuffle(arr) {
   return a;
 }
 
-export default function Quiz({ level, questionCount, timeLimit, bgm, onBack }) {
+export default function Quiz({
+  level,
+  questionCount,
+  timeLimit,
+  onBack,
+  bgmVolume,
+  bgm,
+}) {
   // === State ===
   const [questions, setQuestions] = useState([]); // 残りの問題の配列
   const [current, setCurrent] = useState(null); // 現在の問題オブジェクト
@@ -70,13 +77,13 @@ export default function Quiz({ level, questionCount, timeLimit, bgm, onBack }) {
   useEffect(() => {
     normalBGM.volume = bgmVolume;
     bossBGM.volume = bgmVolume;
-    if (clearBGM) clearBGM.volume = bgmVolume; // GAME CLEAR BGM がある場合
+    if (clearBGM) clearBGM.volume = bgmVolume; // GAME CLEAR BGM
   }, [bgmVolume]);
 
   // 🎵 GAME CLEAR 用 BGM
   const clearBGMRef = React.useRef(new Audio("/bgm-clear.mp3"));
   const clearBGM = clearBGMRef.current;
-  clearBGM.loop = false; // ループさせたいなら true
+  clearBGM.loop = false;
 
   useEffect(() => {
     if (!result && !warning) return;

@@ -121,8 +121,8 @@ export default function App() {
           level={level}
           questionCount={questionCount}
           timeLimit={timeLimit}
-          bgm={bgm} // ★選択されたBGMを渡す
-          onBack={() => setPage("level")}
+          onBack={() => setPage("startMenu")}
+          bgmVolume={bgmVolume}
         />
       )}
     </div>
