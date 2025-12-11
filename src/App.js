@@ -3,6 +3,7 @@ import TopSlide from "./components/TopSlide";
 import StartMenu from "./components/StartMenu";
 import HowToPlay from "./components/HowToPlay";
 import VolumeSetting from "./components/VolumeSetting";
+import CreditPage from "./components/CreditPage";
 import LevelSelect from "./components/LevelSelect";
 import QuestionCount from "./components/QuestionCount";
 import TimeSelect from "./components/TimeSelect";
@@ -35,6 +36,7 @@ export default function App() {
             if (target === "howto") setPage("howto");
             if (target === "bgm") setPage("bgm"); // ← ★ジュークボックス
             if (target === "volume") setPage("volume"); // ★これを追加
+            if (target === "credit") setPage("credit");
           }}
         />
       )}
@@ -66,6 +68,8 @@ export default function App() {
           onBack={() => setPage("startMenu")}
         />
       )}
+
+      {page === "credit" && <CreditPage onBack={() => setPage("startMenu")} />}
 
       {/* レベル選択 */}
       {page === "level" && (
