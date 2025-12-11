@@ -13,10 +13,13 @@ import MessageDisplay from "./MessageDisplay";
 import LevelIntroOverlay from "./LevelIntroOverlay";
 import GameOverOverlay from "./GameOverOverlay";
 import GameClearScreen from "./GameClearScreen";
-import allQuestions from "./questions";
+import { questionSets } from "./questions";
+
 import "../styles.css";
 
+// =========================================
 // 配列シャッフル関数
+// =========================================
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -34,110 +37,107 @@ export default function Quiz({
   bgmVolume,
   bgm,
 }) {
-  // === State ===
-  const [questions, setQuestions] = useState([]); // 残りの問題の配列
-  const [current, setCurrent] = useState(null); // 現在の問題オブジェクト
-  const [answer, setAnswer] = useState(""); // ユーザーの入力
-  const [lives, setLives] = useState(3); // 残りライフ
-  const [result, setResult] = useState(""); // 正解・不正解のメッセージ
-  const [messageType, setMessageType] = useState(""); // メッセージのタイプ
-  const [timeLeft, setTimeLeft] = useState(timeLimit); // 残り時間
-  const [skipUsed, setSkipUsed] = useState(false); // スキップ使用フラグ
-  const [showConfirm, setShowConfirm] = useState(false); // ギブアップ確認画面
-  const [loading, setLoading] = useState(false); // ローディング
-  const [showTimeout, setShowTimeout] = useState(false); // タイムアウト画面
-  const [lastAnswer, setLastAnswer] = useState(""); // タイムアウト時に表示する正解
-  const [questionNumber, setQuestionNumber] = useState(1); // [修正] 盤面（＝累計正解数）
-  const [warning, setWarning] = useState(""); // 入力形式の警告
-  const [stage, setStage] = useState(1); // 現在のステージ
-  const [showLevelIntro, setShowLevelIntro] = useState(true); // ステージイントロ画面
-  const [isGameOver, setIsGameOver] = useState(false); // ゲームオーバー画面
-  // ✅ [修正] 回答処理中の二重実行防止フラグ
+  const selectedQuestions = questionSets[level];
+
+  // =========================================
+  // State
+  // =========================================
+  const [rankPools, setRankPools] = useState({});
+  const [questionsRemaining, setQuestionsRemaining] = useState({});
+
+  const [current, setCurrent] = useState(null);
+  const [answer, setAnswer] = useState("");
+
+  const [lives, setLives] = useState(3);
+  const [result, setResult] = useState("");
+  const [messageType, setMessageType] = useState("");
+
+  const [timeLeft, setTimeLeft] = useState(timeLimit);
+  const [skipUsed, setSkipUsed] = useState(false);
+
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showTimeout, setShowTimeout] = useState(false);
+
+  const [lastAnswer, setLastAnswer] = useState("");
+  const [questionNumber, setQuestionNumber] = useState(1);
+
+  const [warning, setWarning] = useState("");
+
+  const [stage, setStage] = useState(1);
+  const [showLevelIntro, setShowLevelIntro] = useState(true);
+
+  const [isGameOver, setIsGameOver] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
+
   const [showGameClear, setShowGameClear] = useState(false);
 
-  // フィードバック表示時間(ms)
   const FEEDBACK_DURATION = 1000;
 
-  // 🎵 BGM 音源（選択されたBGMをロード）
+  // =========================================
+  // 🎵 BGM 管理
+  // =========================================
   const normalBGMRef = React.useRef(
     new Audio(
       `/bgm-normal-${bgm === "normal1" ? 1 : bgm === "normal2" ? 2 : 3}.mp3`
     )
   );
   const bossBGMRef = React.useRef(new Audio("/bgm-boss.mp3"));
+  const clearBGMRef = React.useRef(new Audio("/bgm-clear.mp3"));
 
   const normalBGM = normalBGMRef.current;
   const bossBGM = bossBGMRef.current;
+  const clearBGM = clearBGMRef.current;
 
   normalBGM.loop = true;
   bossBGM.loop = true;
-
-  // ★ BGM 音量反映（App.js から受け取った値）
-  useEffect(() => {
-    normalBGM.volume = bgmVolume;
-    bossBGM.volume = bgmVolume;
-    if (clearBGM) clearBGM.volume = bgmVolume; // GAME CLEAR BGM
-  }, [bgmVolume]);
-
-  // 🎵 GAME CLEAR 用 BGM
-  const clearBGMRef = React.useRef(new Audio("/bgm-clear.mp3"));
-  const clearBGM = clearBGMRef.current;
   clearBGM.loop = false;
 
   useEffect(() => {
-    if (!result && !warning) return;
+    normalBGM.volume = bgmVolume;
+    bossBGM.volume = bgmVolume;
+    clearBGM.volume = bgmVolume;
+  }, [bgmVolume]);
 
-    const timer = setTimeout(() => {
-      setResult("");
-      setMessageType("");
-      setWarning("");
-    }, FEEDBACK_DURATION);
+  // =========================================
+  // ★ ステージ判定（rank 決定）
+  // =========================================
+  const getLevelStage = (qNum) => {
+    const idx = qNum - 1;
 
-    return () => clearTimeout(timer); // クリーンアップ
-  }, [result, warning]);
+    // 最後の問題は BOSS
+    if (idx === questionCount - 1) return "BOSS";
 
-  // === ステージ判定ロジック（問題数に応じてレベルアップ間隔を変更） ===
-  const getLevelStage = (currentQuestionNum) => {
-    const currentQuestionIndex = currentQuestionNum - 1; // 0-based
-
-    // --- 最後の問題は BOSS ---
-    if (currentQuestionIndex === questionCount - 1) return "BOSS";
-
-    // --- 問題数ごとにレベルアップ間隔を変更 ---
-    let interval = 2; // デフォルト 7問用
+    let interval = 2;
     if (questionCount === 10) interval = 3;
     if (questionCount === 16) interval = 5;
 
-    // --- intervalごとにステージアップ ---
-    const calculatedStage = Math.floor(currentQuestionIndex / interval) + 1;
-
-    // 最大ステージ3まで（BOSSは別処理）
-    return Math.min(3, calculatedStage);
+    return Math.min(3, Math.floor(idx / interval) + 1);
   };
 
-  // === 初期化 useEffect ===
+  // =========================================
+  // 初期化（rank グループ作成）
+  // =========================================
   useEffect(() => {
-    const filtered = allQuestions.filter((q) => q.level === level);
-    const initialQuestions = shuffle(filtered);
+    const selected = questionSets[level];
 
-    // 勝利条件（questionCount）より問題ストックが少ないとE案は破綻する
-    if (initialQuestions.length < questionCount) {
-      setResult(
-        `エラー: 勝利条件（${questionCount}問）に対し、問題が（${initialQuestions.length}問）しかありません。`
-      );
-      setMessageType("error");
-      setCurrent(null);
-      setQuestions([]);
-      return;
-    }
+    const rank1 = shuffle(selected.filter((q) => q.rank === "1"));
+    const rank2 = shuffle(selected.filter((q) => q.rank === "2"));
+    const rank3 = shuffle(selected.filter((q) => q.rank === "3"));
+    const boss = shuffle(selected.filter((q) => q.rank === "BOSS"));
 
-    const [firstQ, ...rest] = initialQuestions;
-    setQuestions(rest); // 「残りの問題」
-    setCurrent(firstQ); // 「最初の問題」
-    setQuestionNumber(1); // 盤面(正解数)を1に
+    setRankPools({ 1: rank1, 2: rank2, 3: rank3, BOSS: boss });
 
-    // --- すべてのStateをリセット ---
+    setQuestionsRemaining({
+      1: rank1.slice(1),
+      2: rank2,
+      3: rank3,
+      BOSS: boss,
+    });
+
+    setCurrent(rank1[0]);
+
+    setQuestionNumber(1);
     setLives(3);
     setSkipUsed(false);
     setIsGameOver(false);
@@ -145,75 +145,274 @@ export default function Quiz({
     setResult("");
     setWarning("");
     setMessageType("");
-    setStage(getLevelStage(1)); // 最初のステージをセット
-    setShowLevelIntro(true); // イントロ画面を表示
-    setTimeLeft(timeLimit); // タイマーをセット
-    setIsChecking(false); // ✅ 処理中フラグをリセット
+
+    setStage(1);
+    setShowLevelIntro(true);
+
+    setTimeLeft(timeLimit);
+    setIsChecking(false);
+
     normalBGM.currentTime = 0;
-    normalBGM.play(); // ←★ここを追加！
+    normalBGM.play();
   }, [level, questionCount, timeLimit]);
 
-  // === ステージ変更時のイントロ表示（競合防止版） ===
-  useEffect(() => {
-    if (!current || isGameOver) return;
-
-    const newStage = getLevelStage(questionNumber);
-
-    if (newStage !== stage) {
-      setStage(newStage);
-
-      setShowLevelIntro(false);
-      requestAnimationFrame(() => setShowLevelIntro(true));
-    }
-  }, [questionNumber, current, isGameOver]);
-
-  // 🎵 BGM 切り替え処理
+  // =========================================
+  // ★ BGM 切替
+  // =========================================
   useEffect(() => {
     if (!current || isGameOver || showGameClear) return;
 
-    // BOSS のときだけボスBGM
     if (stage === "BOSS") {
       normalBGM.pause();
-      normalBGM.currentTime = 0;
-
       bossBGM.play();
     } else {
       bossBGM.pause();
-      bossBGM.currentTime = 0;
-
       normalBGM.play();
     }
-
-    return () => {
-      // クイズ終了時に両方止める
-      normalBGM.pause();
-      bossBGM.pause();
-    };
   }, [stage, current, isGameOver, showGameClear]);
 
-  // 🎵 ゲーム終了時（クリア or ゲームオーバー）にBGMを処理
+  // =========================================
+  // ★ タイマー
+  // =========================================
   useEffect(() => {
-    if (showGameClear) {
-      normalBGM.pause();
-      bossBGM.pause();
-      normalBGM.currentTime = 0;
-      bossBGM.currentTime = 0;
+    if (
+      !current ||
+      showTimeout ||
+      showConfirm ||
+      showLevelIntro ||
+      isGameOver ||
+      isChecking
+    )
+      return;
 
-      clearBGM.currentTime = 0;
-      clearBGM.play();
+    const timer = setInterval(() => {
+      setTimeLeft((t) => {
+        if (t <= 1) {
+          clearInterval(timer);
+          handleTimeout();
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [
+    current,
+    showTimeout,
+    showConfirm,
+    showLevelIntro,
+    isGameOver,
+    isChecking,
+  ]);
+
+  // =========================================
+  // ★ 次の問題へ（rank 切替）
+  // =========================================
+  const advanceToNextProblem = (isCorrect = false) => {
+    // ゲームクリア
+    if (isCorrect && questionNumber === questionCount) {
+      setShowGameClear(true);
+      return;
     }
 
-    if (isGameOver) {
-      normalBGM.pause();
-      bossBGM.pause();
-      normalBGM.currentTime = 0;
-      bossBGM.currentTime = 0;
-      clearBGM.pause();
-      clearBGM.currentTime = 0;
-    }
-  }, [isGameOver, showGameClear]);
+    const nextQuestionNum = isCorrect ? questionNumber + 1 : questionNumber;
+    const nextStage = getLevelStage(nextQuestionNum);
 
-  // === 背景スタイル ===
+    const rankKey = nextStage === "BOSS" ? "BOSS" : nextStage;
+
+    const pool = questionsRemaining[rankKey];
+    if (!pool || pool.length === 0) {
+      setCurrent(null);
+      return;
+    }
+
+    const [next, ...rest] = pool;
+    setCurrent(next);
+
+    setQuestionsRemaining((prev) => ({
+      ...prev,
+      [rankKey]: rest,
+    }));
+
+    if (isCorrect) setQuestionNumber(nextQuestionNum);
+
+    // 必ずリセット
+    setAnswer("");
+    setWarning("");
+    setResult("");
+    setMessageType("");
+    setTimeLeft(timeLimit);
+
+    // ★ ステージ変更と Overlay 表示
+    if (nextStage !== stage) {
+      setStage(nextStage);
+      setShowLevelIntro(true);
+    }
+  };
+
+  // =========================================
+  // ★ 回答チェック
+  // =========================================
+  const checkAnswer = () => {
+    if (!current || isChecking) return;
+    setIsChecking(true);
+
+    const ans = answer.trim();
+
+    // --- ローマ字チェック ---
+    if (/^[a-zA-Z]+$/.test(ans)) {
+      setMessageType("warning");
+      setResult("⚠️ ひらがなで入力してね");
+      setAnswer("");
+      setIsChecking(false);
+      return;
+    }
+
+    const readings = current.reading
+      .replace(/、/g, ",")
+      .split(",")
+      .map((r) => r.trim());
+
+    // --- ニアミス判定 ---
+    const isNearMatch = (input, correct) => {
+      if (input === correct) return false;
+      if (Math.abs(input.length - correct.length) > 1) return false;
+
+      let diff = 0,
+        i = 0,
+        j = 0;
+
+      while (i < input.length && j < correct.length) {
+        if (input[i] !== correct[j]) {
+          diff++;
+          if (diff > 1) return false;
+
+          if (input.length > correct.length) i++;
+          else if (input.length < correct.length) j++;
+          else {
+            i++;
+            j++;
+          }
+        } else {
+          i++;
+          j++;
+        }
+      }
+
+      if (i < input.length || j < correct.length) diff++;
+      return diff === 1;
+    };
+
+    // --- 正解 ---
+    if (readings.includes(ans)) {
+      setMessageType("success");
+      setResult("✅ 正解！");
+
+      setTimeout(() => {
+        advanceToNextProblem(true);
+        setIsChecking(false);
+      }, 800);
+      return;
+    }
+
+    // --- おしい ---
+    if (readings.some((r) => isNearMatch(ans, r))) {
+      setMessageType("near");
+      setResult("🤏 おしい！もう一度チャレンジ！");
+      setAnswer("");
+      setIsChecking(false);
+      return;
+    }
+
+    // --- 不正解 ---
+    setMessageType("error");
+    setResult("❌ 間違い！もう一度チャレンジ！");
+
+    setTimeout(() => {
+      setAnswer("");
+      setIsChecking(false);
+    }, 800);
+  };
+
+  // =========================================
+  // ★ 時間切れ
+  // =========================================
+  const handleTimeout = () => {
+    if (isChecking) return;
+
+    setIsChecking(true);
+    setLastAnswer(current.reading);
+    setShowTimeout(true);
+  };
+
+  const handleNextAfterTimeout = () => {
+    setShowTimeout(false);
+
+    const newLives = lives - 1;
+    setLives(newLives);
+
+    // ★ メッセージ表示
+    setMessageType("error");
+    setResult(`❌ 時間切れ！（残り${newLives}機）`);
+
+    // ★ ライフが0 → GAME OVER
+    if (newLives <= 0) {
+      setTimeout(() => {
+        setIsGameOver(true);
+      }, 1000); // ← 少し余韻を持たせる
+      return;
+    }
+
+    // ★ ここが重要ポイント！
+    // TimeoutScreen が消えてからメッセージを少し見せて、
+    // その後で次の問題へ進む
+    setTimeout(() => {
+      advanceToNextProblem(false);
+      setIsChecking(false);
+    }, 1000); // ← 好きな待ち時間（1000ms = 1秒）
+  };
+
+  // =========================================
+  // ★ スキップ
+  // =========================================
+  const skipQuestion = () => {
+    if (skipUsed || isChecking) return;
+
+    setIsChecking(true); // 二重押し防止
+    setSkipUsed(true);
+
+    // ★ メッセージ表示（青色）
+    setMessageType("info");
+    setResult("🔁 スキップしました！");
+
+    // ★ 少し表示してから次の問題へ
+    setTimeout(() => {
+      advanceToNextProblem(false);
+      setIsChecking(false);
+    }, 800);
+  };
+
+  // =========================================
+  // ★ ギブアップ
+  // =========================================
+  const handleGiveUp = () => setShowConfirm(true);
+
+  const confirmGiveUp = (choice) => {
+    if (choice === "yes") {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        onBack();
+      }, 800);
+    } else {
+      setShowConfirm(false);
+    }
+  };
+
+  // =========================================
+  // ★ 背景色
+  // =========================================
   const getBackgroundStyle = () => {
     switch (stage) {
       case 1:
@@ -229,269 +428,21 @@ export default function Quiz({
     }
   };
 
-  // === タイマー本体 useEffect ===
-  useEffect(() => {
-    if (
-      !current ||
-      showTimeout ||
-      showConfirm ||
-      showLevelIntro ||
-      isGameOver ||
-      isChecking
-    )
-      // ✅ isChecking中もタイマーを止める
-      return;
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          handleTimeout();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [
-    current,
-    showTimeout,
-    showConfirm,
-    showLevelIntro,
-    isGameOver,
-    isChecking,
-  ]); // ✅ 依存配列に追加
+  // =========================================
+  // ★ レンダー
+  // =========================================
 
-  // === [修正] 問題切り替えの共通関数 ===
-  const advanceToNextProblem = (isCorrect = false) => {
-    // 1. (Win Condition) [正解時のみ] これが最後の正解だったか
-    if (isCorrect && questionNumber === questionCount) {
-      // ★ GAME CLEAR 発動
-      setShowGameClear(true);
-
-      // current を null にすると通常の終了画面になるので消す
-      // setCurrent(null); ←これは削除
-
-      return;
-    }
-
-    // 2. (Out of Problems) [第3の終了条件] 問題ストックがあるか
-    if (questions.length === 0) {
-      setResult("📭 問題がなくなりました... 終了します。");
-      setMessageType("error");
-      setCurrent(null);
-      return;
-    }
-
-    // 3. 問題を切り替え
-    const [q, ...rest] = questions;
-    setQuestions(rest);
-    setCurrent(q);
-    setAnswer("");
-    setWarning("");
-    setTimeLeft(timeLimit);
-
-    // 4. (E案) [正解時のみ] 盤面(questionNumber)を進める
-    if (isCorrect) {
-      setQuestionNumber((prev) => prev + 1);
-    }
-  };
-  // === 回答チェック関数 ===
-  const checkAnswer = () => {
-    if (!current || isChecking) return;
-    setIsChecking(true);
-
-    const ans = answer.trim();
-
-    // --- ローマ字判定 ---
-    if (/^[a-zA-Z]+$/.test(ans)) {
-      setWarning("⚠️ ひらがなやカタカナで入力してください！");
-      setResult("");
-      setMessageType("warning");
-      setAnswer("");
-      setIsChecking(false);
-      return;
-    }
-
-    const readings = current.reading
-      .replace(/、/g, ",")
-      .split(",")
-      .map((r) => r.trim());
-
-    const isNearMatch = (input, correct) => {
-      if (input === correct) return false;
-      if (Math.abs(input.length - correct.length) > 1) return false;
-      let diff = 0,
-        i = 0,
-        j = 0;
-      while (i < input.length && j < correct.length) {
-        if (input[i] !== correct[j]) {
-          diff++;
-          if (diff > 1) return false;
-          if (input.length > correct.length) i++;
-          else if (input.length < correct.length) j++;
-          else {
-            i++;
-            j++;
-          }
-        } else {
-          i++;
-          j++;
-        }
-      }
-      if (i < input.length || j < correct.length) diff++;
-      return diff === 1;
-    };
-
-    // --- 判定 ---
-    // 1. 正解
-    if (readings.includes(ans)) {
-      setResult("✅ 正解！");
-      setMessageType("success");
-      setTimeout(() => {
-        advanceToNextProblem(true);
-        setIsChecking(false);
-      }, 1000);
-      return;
-    }
-
-    // 2. おしい
-    if (readings.some((r) => isNearMatch(ans, r))) {
-      setResult("🤏 おしい！あと少し！");
-      setMessageType("near");
-      setAnswer("");
-      setIsChecking(false);
-      return;
-    }
-
-    // 3. ❌ 不正解 ←🔥 今ここを新しい仕様に差し替える！！
-    // --- ✨ 新しい不正解処理（問題を進めない・ライフを減らさない） ---
-    setResult("❌ 間違い！もう一度チャレンジ！");
-    setMessageType("error");
-
-    setTimeout(() => {
-      setAnswer("");
-      setWarning("");
-      setIsChecking(false);
-    }, 800);
-  };
-
-  // === 時間切れ処理 ===
-  const handleTimeout = () => {
-    if (!current || isChecking) return; // ✅ [修正] 処理中なら実行しない
-    setIsChecking(true); // ✅ [修正] 処理中フラグを立てる
-
-    setLastAnswer(current.reading);
-    setShowTimeout(true);
-  };
-
-  // (E案-4) タイムアウト画面の「次へ」ボタン
-  const handleNextAfterTimeout = () => {
-    setShowTimeout(false);
-    const newLives = lives - 1;
-    setLives(newLives);
-
-    if (newLives <= 0) {
-      setResult(`❌ 時間切れ！（残り${newLives}機）`);
-      setMessageType("error");
-      setTimeout(() => {
-        setIsGameOver(true);
-        // setIsChecking(false); // ゲームオーバーなので不要
-      }, 800);
-      return;
-    }
-
-    setResult(`❌ 時間切れ！（残り${newLives}機）`);
-    setMessageType("error");
-    setTimeout(() => {
-      advanceToNextProblem(false); // 盤面を進めない
-      setIsChecking(false); // ✅ [修正] 処理完了
-    }, 800);
-  };
-
-  // (E案-3) スキップ処理
-  const skipQuestion = () => {
-    if (skipUsed || !current || questions.length === 0 || isChecking) return; // ✅ [修正] 処理中なら実行しない
-    setIsChecking(true); // ✅ [修正] 処理中フラグを立てる
-
-    setSkipUsed(true);
-
-    setResult("🔁 スキップしました！");
-    setMessageType("info");
-    setTimeout(() => {
-      advanceToNextProblem(false); // 盤面を進めない
-      setIsChecking(false); // ✅ [修正] 処理完了
-    }, 1000);
-  };
-
-  // === ギブアップ処理 ===
-  const handleGiveUp = () => {
-    if (isChecking) return; // ✅ [修正] 処理中なら実行しない
-    setShowConfirm(true);
-  };
-
-  const confirmGiveUp = (choice) => {
-    if (choice === "yes") {
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        onBack(); // App.js に戻る
-      }, 1000);
-    } else {
-      setShowConfirm(false);
-    }
-  };
-
-  // 🎵 ゲーム終了時（クリア or ゲームオーバー）にBGMを停止
-  useEffect(() => {
-    if (isGameOver || showGameClear) {
-      normalBGM.pause();
-      bossBGM.pause();
-      normalBGM.currentTime = 0;
-      bossBGM.currentTime = 0;
-    }
-  }, [isGameOver, showGameClear]);
-
-  // === レンダリング ===
-
-  // 1. ローディング画面
   if (loading) return <LoadingScreen message="終了しています..." />;
-
-  // 2. ギブアップ確認画面
   if (showConfirm) return <ConfirmGiveUp onConfirm={confirmGiveUp} />;
-  // 3. ゲームクリア画面（★追加★）
-  if (showGameClear) {
-    return <GameClearScreen onBack={onBack} />;
-  }
+  if (showGameClear) return <GameClearScreen onBack={onBack} />;
 
-  // 4. (ゲーム終了/エラー/クリア 画面)
-  if (!current) {
-    return (
-      <div
-        style={{
-          textAlign: "center",
-          padding: "40px",
-          ...getBackgroundStyle(),
-          minHeight: "100vh",
-          color: "white",
-        }}
-      >
-        <h2 style={{ textShadow: "0 0 5px black" }}>
-          {result || "ゲーム終了！"}
-        </h2>
-        <button onClick={onBack} style={{ marginTop: "20px" }}>
-          ← 最初に戻る
-        </button>
-      </div>
-    );
-  }
-
-  // 5. メインのクイズ画面
   return (
     <div className="quiz-root" style={{ position: "relative" }}>
-      {/* ★ここにオーバーレイを表示させる */}
       {showLevelIntro && (
         <LevelIntroOverlay
-          levelText={`LEVEL ${stage} 漢検4・5級`}
+          levelText={
+            stage === "BOSS" ? "⚔️ BOSS STAGE ⚔️" : `LEVEL ${stage} 漢検4・5級`
+          }
           onFinish={() => setShowLevelIntro(false)}
         />
       )}
@@ -499,7 +450,9 @@ export default function Quiz({
       <DebugPanel
         questionNumber={questionNumber}
         questionCount={questionCount}
-        questionsLength={questions.length}
+        questionsLength={
+          questionsRemaining[stage === "BOSS" ? "BOSS" : stage]?.length || 0
+        }
         isChecking={isChecking}
       />
 
@@ -508,44 +461,39 @@ export default function Quiz({
       </div>
 
       <QuestionCounter current={questionNumber} total={questionCount} />
+
       <div className="quiz-mode" style={getBackgroundStyle()}>
         <div className="quiz-card">
           <Enemy visible={level === "easy"} />
           <Timer timeLeft={timeLeft} />
-          <div className="question-text">{current.kanji}</div>
+
+          <div className="question-text">{current?.kanji}</div>
+
           <input
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             placeholder="ひらがなで答えてね"
             className="answer-input"
-            // ⬇⬇⬇ ここを追加！ Enter で回答できる
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                checkAnswer();
-              }
-            }}
-            // *********************************************
-            // 下は元のコードそのままでOK
+            onKeyDown={(e) => e.key === "Enter" && checkAnswer()}
             readOnly={showTimeout || isGameOver || isChecking || showLevelIntro}
           />
 
           <MessageDisplay message={warning || result} type={messageType} />
+
           <ActionButtons
             onAnswer={checkAnswer}
             onSwap={skipQuestion}
             onGiveUp={handleGiveUp}
-            // ✅ [修正] 処理中はボタンも無効化
             disabled={skipUsed || isChecking || showLevelIntro}
           />
         </div>
       </div>
 
-      {/* オーバーレイ表示 */}
       {showTimeout && (
         <TimeoutScreen
           correctAnswer={lastAnswer}
           onNext={handleNextAfterTimeout}
-          lives={lives} // ←★ここを追加！
+          lives={lives}
         />
       )}
 
