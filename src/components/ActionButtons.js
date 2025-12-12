@@ -3,7 +3,6 @@ import React from "react";
 import "../styles.css";
 
 export default function ActionButtons({
-  onAnswer,
   onSwap,
   onGiveUp,
   disabled,
@@ -24,12 +23,7 @@ export default function ActionButtons({
         🔄 入れ替える
       </button>
 
-      {/* 真ん中の答えるボタン */}
-      <div className="center-answer-btn">
-        <button className="main-btn" onClick={onAnswer}>
-          答える
-        </button>
-      </div>
+      {/* 真ん中の答えるボタンは削除 */}
     </>
   );
 }
